@@ -58,30 +58,18 @@ class HomeScreen extends React.Component {
     let thirdScale = this.state.openingScales[2]
     return (
       <View style={styles.container}>
-        <Animated.View style={{
-            transform: [
-              {scale: firstScale}
-            ]
-          }}
-        >
-          <SpringButton />
-        </Animated.View>
-        <Animated.View style={{
-            transform: [
-              {scale: secondScale}
-            ]
-          }}
-        >
-          <SpringButton />
-        </Animated.View>
-        <Animated.View style={{
-            transform: [
-              {scale: thirdScale}
-            ]
-          }}
-        >
-          <SpringButton />
-        </Animated.View>
+        {this.state.openingScales.map(function(scale, index) {
+          let key = `scale_key_${index}`
+          return (<Animated.View key={key} style={{
+              transform: [
+                {scale: scale}
+              ]
+            }}
+          >
+            <SpringButton />
+          </Animated.View>
+          )
+        }.bind(this))}
         <Text style={styles.instructions}>
           To get started, edit index.ios.js
         </Text>

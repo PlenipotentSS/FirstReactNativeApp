@@ -26,6 +26,9 @@ Accelerometer.setAccelerometerUpdateInterval(0.1);
 var AccelerometerManager = React.createClass({
   getInitialState: function () {
     return {
+      initialX: 0,
+      initialY: 0,
+      initialZ: 0,
       x: 0,
       y: 0,
       z: 0,
@@ -35,12 +38,21 @@ var AccelerometerManager = React.createClass({
   },
   componentDidMount: function () {
     accelerometerListener = DeviceEventEmitter.addListener('AccelerationData', function (data) {
-      this.setState({
-        x: data.acceleration.x.toFixed(5),
-        y: data.acceleration.y.toFixed(5),
-        z: data.acceleration.z.toFixed(5),
-        deltaZ: (data.acceleration.z.toFixed(5) - this.state.z)
-      });
+      if (this.state.initialX === 0) {
+        this.setState({
+          initialX: 1+parseInt(data.acceleration.x.toFixed(5)*100),
+          initialY: 1+parseInt(data.acceleration.y.toFixed(5)*100),
+          initialZ: 1+parseInt(data.acceleration.z.toFixed(5)*10)
+        });
+      } else {
+
+        this.setState({
+          x: parseInt(this.state.initialX) + parseInt(data.acceleration.x.toFixed(5)*100),
+          y: parseInt(this.state.initialY) + parseInt(data.acceleration.y.toFixed(5)*100),
+          z: parseInt(this.state.initialZ) + parseInt(data.acceleration.z.toFixed(5)*10),
+          deltaZ: (parseInt(this.state.initialZ) + parseInt(data.acceleration.z.toFixed(5)*10) - parseInt(this.state.z))
+        });
+      }
     }.bind(this));
   },
   componentWillUnmount: function () {
@@ -56,9 +68,9 @@ var AccelerometerManager = React.createClass({
   handleStop: function () {
     Accelerometer.stopAccelerometerUpdates();
     this.setState({
-      x: 0,
-      y: 0,
-      z: 0,
+      initialX: 0,
+      initialY: 0,
+      initialZ: 0,
       deltaZ: 0,
       gyro: false
     });

@@ -15,7 +15,7 @@ import {
   View
 } from 'react-native';
 
-var HomeScreen = require('./Home/HomeScreen');
+var HomeScreen = require('./components/Screens/HomeScreen');
 
 class FirstReactNative extends Component {
   render() {

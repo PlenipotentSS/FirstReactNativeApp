@@ -18,16 +18,13 @@ class SpringButton extends React.Component {
       scale: new Animated.Value(0) 
     };
     this._onPressIn = this._onPressIn.bind(this);
-    this._onPressOut = this._onPressOut.bind(this);
+    this._onPressOut = this._onPressOut.bind(this);;
+    this._finishedPress = this._finishedPress.bind(this);
     this.runAnimation = this.runAnimation.bind(this);
   }
 
-  componentWillMount() {
-
-  }
-  
   componentDidMount() {
-    this.state.scale.setValue(1.5); 
+    this.state.scale.setValue(1.3); 
   }
 
   runAnimation(toValue) {
@@ -42,22 +39,25 @@ class SpringButton extends React.Component {
   }
 
   _onPressIn() {
-    console.log('pressed');
     // Animate the update
-    this.runAnimation(1)
+    this.runAnimation(1);
+  }
+
+  _finishedPress() {
+    this.props.action();
   }
 
   _onPressOut() {
-    console.log('un pressed');
     // Animate the update
     this.state.scale.setValue(1);
-    this.runAnimation(1.5);
+    this.runAnimation(1.3);
   }
 
   render() {
     return (
       <View style={{zIndex: 100}}>
         <TouchableWithoutFeedback 
+          onPress={this._finishedPress}
           onPressIn={this._onPressIn}
           onPressOut={this._onPressOut}
         >
@@ -69,7 +69,7 @@ class SpringButton extends React.Component {
                 {scale: this.state.scale}
               ]
             }]}>
-              Funny
+              {this.props.title}
             </Animated.Text>
           </View>
         </TouchableWithoutFeedback>

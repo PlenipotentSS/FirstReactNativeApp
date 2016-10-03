@@ -29,6 +29,7 @@ var AccelerometerManager = React.createClass({
       x: 0,
       y: 0,
       z: 0,
+      deltaZ: 0,
       gyro: false
     }
   },
@@ -37,7 +38,8 @@ var AccelerometerManager = React.createClass({
       this.setState({
         x: data.acceleration.x.toFixed(5),
         y: data.acceleration.y.toFixed(5),
-        z: data.acceleration.z.toFixed(5)
+        z: data.acceleration.z.toFixed(5),
+        deltaZ: (data.acceleration.z.toFixed(5) - this.state.z)
       });
     }.bind(this));
   },
@@ -57,6 +59,7 @@ var AccelerometerManager = React.createClass({
       x: 0,
       y: 0,
       z: 0,
+      deltaZ: 0,
       gyro: false
     });
   },
@@ -72,11 +75,19 @@ var AccelerometerManager = React.createClass({
     }
   },
   render: function() {
+    //change style of z-index if the motion is upward
+    var zStyle = [{}]
+    if (this.state.deltaZ > 0) {
+      zStyle = [styles.higher]
+    } else if (this.state.deltaZ < 0 ) {
+      zStyle = [styles.lower]
+    }
+
     return (
       <View style={styles.accContainer}>
         <Text>x: {this.state.x}</Text>
         <Text>y: {this.state.y}</Text>
-        <Text>z: {this.state.z}</Text>
+        <Text style={zStyle}>z: {this.state.z}</Text>
         <Text />
         {this.getTrigger()}
       </View>
@@ -94,6 +105,12 @@ const styles = StyleSheet.create({
   stopButton: {
     color: 'red', 
     margin: 20
+  },
+  higher: {
+    color: 'green'
+  },
+  lower: {
+    color: 'red'
   },
   startButton: {
     color: 'green', 

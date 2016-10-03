@@ -54,6 +54,16 @@ class SpringButton extends React.Component {
   }
 
   render() {
+    let buttonStyle = [
+      styles.button,
+      this.props.style,
+      {
+        transform: [
+          {scale: this.state.scale}
+        ]
+      }
+    ];
+
     return (
       <View style={{zIndex: 100}}>
         <TouchableWithoutFeedback 
@@ -62,13 +72,7 @@ class SpringButton extends React.Component {
           onPressOut={this._onPressOut}
         >
           <View>
-            <Animated.Text style={[styles.welcome, {
-              backgroundColor: "#909090",
-              padding: 10,
-              transform: [
-                {scale: this.state.scale}
-              ]
-            }]}>
+            <Animated.Text style={buttonStyle}>
               {this.props.title}
             </Animated.Text>
           </View>
@@ -80,10 +84,12 @@ class SpringButton extends React.Component {
 
 
 const styles = StyleSheet.create({
-  welcome: {
+  button: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
+    backgroundColor: "#909090",
+    padding: 10,
   }
 });
 

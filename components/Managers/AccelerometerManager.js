@@ -13,7 +13,7 @@ import {
   DeviceEventEmitter
 } from 'react-native';
 
-import Button from 'react-native-button';
+var SpringButton = require('../Buttons/SpringButton');
 
 var {
   Accelerometer
@@ -63,21 +63,21 @@ var AccelerometerManager = React.createClass({
   getTrigger: function() {
     if (this.state.gyro) {
       return (
-        <Button style={styles.stopButton} onPress={this.handleStop}>Stop</Button>
+        <SpringButton action={this.handleStop} style={{backgroundColor: 'red'}} title="Stop" />
       )
     } else {
       return (
-        <Button style={styles.startButton} onPress={this.handleStart}>Start</Button>
+        <SpringButton action={this.handleStart} style={{backgroundColor: 'green'}} title="Start" />
       )
     }
   },
   render: function() {
-    console.log(this.state);
     return (
       <View style={styles.accContainer}>
         <Text>x: {this.state.x}</Text>
         <Text>y: {this.state.y}</Text>
         <Text>z: {this.state.z}</Text>
+        <Text />
         {this.getTrigger()}
       </View>
     );

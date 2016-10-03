@@ -12,7 +12,7 @@ import {
   DeviceEventEmitter
 } from 'react-native';
 
-import Button from 'react-native-button';
+var SpringButton = require('../Buttons/SpringButton');
 
 var {
   Magnetometer
@@ -60,7 +60,6 @@ var MagnetometerManager = React.createClass({
     });
   },
   render: function() {
-    console.log(this.state);
     return (
       <View style={{
         flex: 1,
@@ -70,10 +69,11 @@ var MagnetometerManager = React.createClass({
         <Text>x: {this.state.x}</Text>
         <Text>y: {this.state.y}</Text>
         <Text>z: {this.state.z}</Text>
+        <Text />
         {
           (this.state.gyro) ?
-          <Button style={{color: 'red', margin: 20}} onPress={this.handleStop}>Stop</Button> :
-          <Button style={{color: 'green', margin: 20}} onPress={this.handleStart}>Start</Button>
+          <SpringButton action={this.handleStop} style={{backgroundColor: 'red'}} title="Stop" /> :
+          <SpringButton action={this.handleStart} style={{backgroundColor: 'green'}} title="Start" />
         }
       </View>
     );

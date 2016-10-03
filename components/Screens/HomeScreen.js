@@ -35,19 +35,22 @@ class HomeScreen extends React.Component {
       }
     };
     this._handleNavigationPress = this._handleNavigationPress.bind(this);
+    this.runOpenAnimation = this.runOpenAnimation.bind(this);
+    this.runCloseAnimation = this.runCloseAnimation.bind(this);
   }
 
-  componentDidMount() {
-    Animated.stagger(200,[            // spring to start and twirl after decay finishes
+  runOpenAnimation(delay) {
+    // spring to start and twirl after decay finishes
+    Animated.stagger(delay,[            
       Animated.spring(
-        this.state.openingScales[0],
+        this.state.openingScales[1],
         {
           toValue: 1
         }
       ),
       Animated.parallel([          // after decay, in parallel:
         Animated.spring(
-          this.state.openingScales[1],
+          this.state.openingScales[0],
           {
             toValue: 1
           }
@@ -62,7 +65,47 @@ class HomeScreen extends React.Component {
     ]).start(); 
   }
 
+  runCloseAnimation() {
+    Animated.parallel([
+      Animated.spring(
+        this.state.openingScales[0],
+        {
+          toValue: 0
+        }
+      ),
+      Animated.spring(
+        this.state.openingScales[1],
+        {
+          toValue: 0
+        }
+      ),
+      Animated.spring(
+        this.state.openingScales[2],
+        {
+          toValue: 0
+        }
+      )
+    ]).start();
+  }
+
+  componentDidMount() {
+    // get current route from navigation
+    var currentRoute = this.props.navigator.navigationContext.currentRoute;
+
+    //add listener for an viewWillAppear from Navigation stack (only acts for current route)
+    this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+      if (currentRoute === event.data.route) {
+        this.runOpenAnimation(200);
+      }
+    });
+  }
+
+  componenetWillUnmount() {
+    console.log('unmounted');
+  }
+
   _handleNavigationPress(route) {
+    this.runCloseAnimation();
     this.props.navigator.push(route);
   }
 
@@ -89,9 +132,7 @@ class HomeScreen extends React.Component {
           </Animated.View>
           )
         }.bind(this))}
-        <Text>
-
-        </Text>
+        <Text />
         <Text style={styles.instructions}>
           To get started, edit index.ios.js
         </Text>

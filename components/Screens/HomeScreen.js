@@ -21,18 +21,24 @@ var SpringButton = require('../Buttons/SpringButton');
 var GyroscopeManager = require('../Managers/GyroscopeManager');
 var AccelerometerManager = require('../Managers/AccelerometerManager');
 var MagnetometerManager = require('../Managers/Magnetometer');
+var GeolocationManager = require('../Managers/GeolocationManager');
 
 class HomeScreen extends React.Component {
 
   constructor(props) {
     super(props);
+
+    let routes = {
+      gyroscope: { title: "Gyroscope", component: GyroscopeManager},
+      accelerometer: { title: "Accelerometer", component: AccelerometerManager},
+      magnetometer: { title: "Magnetometer", component: MagnetometerManager},
+      geolocation: { title: "Geolocation", component: GeolocationManager}
+    }
+
     this.state = {
-      openingScales: [new Animated.Value(0),new Animated.Value(0),new Animated.Value(0)],
-      routes: {
-        gyroscope: { title: "Gyroscope", component: GyroscopeManager},
-        accelerometer: { title: "Accelerometer", component: AccelerometerManager},
-        magnetometer: { title: "Magnetometer", component: MagnetometerManager}
-      }
+      opacity: new Animated.Value(0),
+      openingScales: [new Animated.Value(0),new Animated.Value(0),new Animated.Value(0),new Animated.Value(0)],
+      routes: routes
     };
     this._handleNavigationPress = this._handleNavigationPress.bind(this);
     this.runOpenAnimation = this.runOpenAnimation.bind(this);
@@ -41,7 +47,13 @@ class HomeScreen extends React.Component {
 
   runOpenAnimation(delay) {
     // spring to start and twirl after decay finishes
-    Animated.stagger(delay,[            
+    Animated.stagger(delay,[
+      Animated.spring(
+        this.state.opacity,
+        {
+          toValue: 1
+        }
+      ),            
       Animated.spring(
         this.state.openingScales[1],
         {
@@ -62,29 +74,50 @@ class HomeScreen extends React.Component {
           }
         )
       ]),
+      Animated.spring(
+        this.state.openingScales[3],
+        {
+          toValue: 1
+        }
+      ),
     ]).start(); 
   }
 
   runCloseAnimation() {
-    Animated.parallel([
+    
+    Animated.stagger(200, [
       Animated.spring(
-        this.state.openingScales[0],
+        this.state.opacity,
         {
           toValue: 0
         }
       ),
-      Animated.spring(
-        this.state.openingScales[1],
-        {
-          toValue: 0
-        }
-      ),
-      Animated.spring(
-        this.state.openingScales[2],
-        {
-          toValue: 0
-        }
-      )
+      Animated.parallel([
+        Animated.spring(
+          this.state.openingScales[0],
+          {
+            toValue: 0
+          }
+        ),
+        Animated.spring(
+          this.state.openingScales[1],
+          {
+            toValue: 0
+          }
+        ),
+        Animated.spring(
+          this.state.openingScales[2],
+          {
+            toValue: 0
+          }
+        ),
+        Animated.spring(
+          this.state.openingScales[3],
+          {
+            toValue: 0
+          }
+        )
+      ])
     ]).start();
   }
 
@@ -110,12 +143,11 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    let firstScale = this.state.openingScales[0];
-    let secondScale = this.state.openingScales[1];
-    let thirdScale = this.state.openingScales[2];
-    let buttons = ['gyroscope','accelerometer','magnetometer'];
+    let buttons = ['gyroscope','accelerometer','magnetometer','geolocation'];
     return (
-      <View style={styles.container}>
+      <Animated.View style={[styles.container, {
+        opacity: this.state.opacity
+      }]}>
         {this.state.openingScales.map(function(scale, index) {
           let key = `scale_key_${index}`;
           let action = buttons[index];
@@ -137,7 +169,7 @@ class HomeScreen extends React.Component {
           Press Cmd+R to reload,{'\n'}
           Cmd+D or shake for dev menu
         </Text>
-      </View>
+      </Animated.View>
     );
   }
 }

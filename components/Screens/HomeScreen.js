@@ -6,6 +6,7 @@ import {
   Animated,
   NavigatorIOS,
   StyleSheet,
+  ScrollView,
   Text,
   View
 } from 'react-native';
@@ -22,6 +23,7 @@ var GyroscopeManager = require('../Managers/GyroscopeManager');
 var AccelerometerManager = require('../Managers/AccelerometerManager');
 var MagnetometerManager = require('../Managers/Magnetometer');
 var GeolocationManager = require('../Managers/GeolocationManager');
+var VideoScreen = require('./VideoScreen');
 
 class HomeScreen extends React.Component {
 
@@ -32,12 +34,17 @@ class HomeScreen extends React.Component {
       gyroscope: { title: "Gyroscope", component: GyroscopeManager},
       accelerometer: { title: "Accelerometer", component: AccelerometerManager},
       magnetometer: { title: "Magnetometer", component: MagnetometerManager},
-      geolocation: { title: "Geolocation", component: GeolocationManager}
+      geolocation: { title: "Geolocation", component: GeolocationManager},
+      videoScreen: { title: "VideoScreen", component: VideoScreen}
     }
 
     this.state = {
       opacity: new Animated.Value(0),
-      openingScales: [new Animated.Value(0),new Animated.Value(0),new Animated.Value(0),new Animated.Value(0)],
+      openingScales: [new Animated.Value(0),
+                      new Animated.Value(0),
+                      new Animated.Value(0),
+                      new Animated.Value(0),
+                      new Animated.Value(0)],
       routes: routes
     };
     this._handleNavigationPress = this._handleNavigationPress.bind(this);
@@ -80,6 +87,12 @@ class HomeScreen extends React.Component {
           toValue: 1
         }
       ),
+      Animated.spring(
+        this.state.openingScales[4],
+        {
+          toValue: 1
+        }
+      ),
     ]).start(); 
   }
 
@@ -116,6 +129,12 @@ class HomeScreen extends React.Component {
           {
             toValue: 0
           }
+        ),
+        Animated.spring(
+          this.state.openingScales[4],
+          {
+            toValue: 0
+          }
         )
       ])
     ]).start();
@@ -143,32 +162,38 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    let buttons = ['gyroscope','accelerometer','magnetometer','geolocation'];
+    let buttons = ['gyroscope','accelerometer','magnetometer','geolocation','videoScreen'];
     return (
-      <Animated.View style={[styles.container, {
+      <Animated.View style={[{
+        flex: 1,
+        backgroundColor: '#F5FCFF',
         opacity: this.state.opacity
       }]}>
-        {this.state.openingScales.map(function(scale, index) {
-          let key = `scale_key_${index}`;
-          let action = buttons[index];
-          let thisRoute = this.state.routes[action];
+        <ScrollView style={{flex: 1, backgroundColor: '#F5FCFF'}}>
+          <View style={styles.container}>
+            {this.state.openingScales.map(function(scale, index) {
+              let key = `scale_key_${index}`;
+              let action = buttons[index];
+              let thisRoute = this.state.routes[action];
 
 
-          return (<Animated.View key={key} style={{
-              transform: [
-                {scale: scale}
-              ]
-            }}
-          >
-            <SpringButton action={this._handleNavigationPress.bind(this, thisRoute)} title={thisRoute.title} />
-          </Animated.View>
-          )
-        }.bind(this))}
-        <Text />
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
+              return (<Animated.View key={key} style={{
+                  transform: [
+                    {scale: scale}
+                  ]
+                }}
+              >
+                <SpringButton action={this._handleNavigationPress.bind(this, thisRoute)} title={thisRoute.title} />
+              </Animated.View>
+              )
+            }.bind(this))}
+            <Text />
+            <Text style={styles.instructions}>
+              Press Cmd+R to reload,{'\n'}
+              Cmd+D or shake for dev menu
+            </Text>
+          </View>
+        </ScrollView>
       </Animated.View>
     );
   }
